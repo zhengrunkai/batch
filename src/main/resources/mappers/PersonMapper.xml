@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.batch.dao.PersonDao" >
+    <resultMap id="PersonMap" type="com.example.batch.bean.Person" >
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="id" property="id" jdbcType="INTEGER" />
+        <result column="name" property="name" jdbcType="VARCHAR" />
+        <result column="money" property="money" jdbcType="BIGINT" />
+    </resultMap>
+
+    <insert id="insertPersonByBatch" parameterType="java.util.List">
+        INSERT INTO person (
+            id,
+            name,
+            money
+        ) values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+                #{item.id,jdbcType=NUMERIC},
+                #{item.name,jdbcType=VARCHAR},
+                #{item.money,jdbcType=NUMERIC}
+            )
+        </foreach>
+    </insert>
+
+    <delete id="deletePersonByBatch">
+        delete from person where id in
+        <foreach collection="list" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <update id="updatePersonByBatch" parameterType="java.util.List">
+        <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+            update person
+            set name = #{item.name}, money = #{item.money}
+            where id = #{item.id}
+        </foreach>
+    </update>
+
+    <select id="selectPersonList" resultType="com.example.batch.bean.Person" >
+        select id, name, money from person
+    </select>
+
+</mapper>
